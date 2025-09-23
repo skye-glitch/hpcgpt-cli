@@ -101,13 +101,6 @@
       }
     }
   },
-  // I'm disabling sharing as i don't think this is a feature we want on Delta
-  "share": "disabled",
-  // Configure permissions to control what AI agents can do by default. 
-  "permission": {
-    "edit": "ask",
-    "bash": "ask"
-  },
   // Can add MCP Servers with this field
   "mcp": {
     "slurm-mcp-server": {
@@ -119,9 +112,37 @@
       "type": "local",
       "command": ["bun", "run", "illinois-chat-mcp-server", ">", "logs/illinois-chat-server.log"],
       "enabled": true
+    },
+    "report-server": {
+      "type": "local",
+      "command": ["bun", "run", "report-server", ">", "logs/report-server.log"],
+      "enabled": true
+    },
+    "atlassian-mcp-server": {
+      "type": "local",
+      "command": ["apptainer", "run", "--env-file", ".env.atlassian", "containers/atlassian-mcp-server.sif"],
+      "enabled": true
     }
+  },
+  "command": {
+    "report": {
+      // Prompt sent to the llm
+      "template": "Use the send_support_report tool to send an issue report to the Delta support team. This report will contain the full conversation history and system information about where the report originated.",
+      // Description shown in the TUI
+      "description": "Report an issue to the Delta support team",
+      "agent": "support",
+      "model": "ncsaollama/qwen3:32b"
+    }
+  },
+  // I'm disabling sharing as i don't think this is a feature we want on Delta
+  "share": "disabled",
+  // Configure permissions to control what AI agents can do by default. 
+  "permission": {
+    "edit": "ask",
+    "bash": "ask"
   },
   "theme": "opencode"
   // Can remove any providers we don't want with this field
   //"disabled_providers": ["openai", "gemini"]
+  
 }
