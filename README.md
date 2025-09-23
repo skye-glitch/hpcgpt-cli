@@ -1,7 +1,27 @@
-# hpcgpt
-HPCGPT CLI
+# HPCGPT CLI
 
 HPCCode is a customized CLI tool, based on the Opencode[https://opencode.ai] CLI providing custom integrations to slurm based HPC enviroments. 
+
+## Available Servers
+
+- slurm-mcp (local)
+  - Tools: `accounts`, `sinfo`, `squeue`, `scontrol`
+  - Purpose: query accounts, node/partition status, user jobs, and job details.
+
+- illinois-chat-mcp (local)
+  - Tools: `delta-docs`, `delta-ai-docs`
+  - Purpose: answer questions from Delta and Delta AI documentation (requires `ILLINOIS_CHAT_API_KEY`).
+
+- report-server (local)
+  - Tools: `send_support_report`
+  - Purpose: email a concise support report with conversation history and system info to the Delta support team.
+
+- atlassian-mcp-server (container)
+  - Tools (examples): Jira — `jira_get_issue`, `jira_search_issues`, `jira_create_issue`, `jira_add_comment`, `jira_transition_issue`; Confluence — `confluence_search`, `confluence_get_page`, `confluence_create_page`, `confluence_update_page` (availability depends on config/read-only mode).
+  - Purpose: interact with Jira and Confluence for tickets and docs. See Atlassian MCP README: https://github.com/sooperset/mcp-atlassian
+
+
+## Installation
 
 Right now we are just using a custom configuration file for Opencode so you will need to install opencode itself with:
 
@@ -30,6 +50,9 @@ The `example.env` file is a template showing the environment variables that can 
 
 3. **NCSA_OLLAMA_URL** - URL endpoint for NCSA Ollama service
    - Enables using NCSA hosted models
+
+4. **JIRA_PERSONAL_ACCESS_TOKEN** - Jira token for authticating with the atlassian mcp server
+   - Enables quering NCSA jira for information.
 
 
 Additonally our custom chatbots can be found at:
