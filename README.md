@@ -4,6 +4,9 @@
 
 # HPCGPT CLI
 
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Tech](https://img.shields.io/badge/AI-Opencode%20Agent%20%7C%20MCP%20Servers%20%7C%20Slurm%20%7C%20Illinois%20Chat%20%7C%20Atlassian-blueviolet)
+
 hpcGPT is a customized CLI built on top of the `Opencode` agent that integrates Model Context Protocol (MCP) servers for Slurm-based HPC environments, Illinois Chat documentation Q&A, reporting, and Atlassian.
 
 ## TL;DR – Getting Started
@@ -15,6 +18,15 @@ opencode
 ```
 
 Set environment variables as needed (see Env section below), then pick a model and use tools from the TUI.
+
+## Features
+
+- Slurm integration (MCP): `sinfo`, `squeue`, `scontrol`, and `accounts` via `slurm-mcp-server`.
+- Docs Q&A (MCP): Illinois Chat tools `delta-docs`, `delta-ai-docs` for Delta/Delta AI documentation.
+- Atlassian integration (MCP): Containerized Jira/Confluence tools with flexible auth modes.
+- Support reporting: `report-server` sends concise support reports with context.
+- Multiple providers: NCSA Hosted and NCSA Ollama providers selectable in `opencode.jsonc`.
+- Config-driven: Everything wired through `opencode.jsonc` for reproducibility.
 
 ## System Architecture
 
@@ -61,6 +73,26 @@ flowchart LR
 - `illinois-chat-server` calls the Illinois Chat API to answer questions from Delta/Delta AI docs.
 - `atlassian-mcp-server` runs via Apptainer and exposes Jira/Confluence tools.
 - `report-server` can send a compact support report with session context.
+
+## Project Structure
+
+```
+hpcgpt/
+  mcp_servers/
+    illinois_chat_server/
+      src/index.ts
+      package.json
+    slurm_mcp_server/
+      src/index.ts
+      package.json
+  prompts/
+    support.txt
+  opencode.jsonc
+  example.env
+  example.env.atlassian
+  README.md
+  favicon.png
+```
 
 ## MCP Servers & Tools
 
