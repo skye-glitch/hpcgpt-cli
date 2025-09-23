@@ -32,20 +32,12 @@ Set environment variables as needed (see Env section below), then pick a model a
 
 ```mermaid
 graph TD
-  U[User]
-  OC[Opencode Agent]
+  U[User] -->|TUI| OC[Opencode Agent]
 
-  U -->|TUI| OC
+  OC --> P1[NCSA Hosted Provider]
+  OC --> P2[NCSA Ollama Provider]
 
-  subgraph Providers
-    P1[NCSA Hosted]
-    P2[NCSA Ollama]
-  end
-
-  OC --> P1
-  OC --> P2
-
-  subgraph MCP Servers (local unless noted)
+  subgraph MCP_Servers
     M1[slurm-mcp-server]
     M2[illinois-chat-server]
     M3[report-server]
@@ -57,24 +49,11 @@ graph TD
   OC -. tools .-> M3
   OC -. tools .-> M4
 
-  subgraph External Services
-    SLURM[Slurm CLI]
-    ICHAT[Illinois Chat API]
-    JIRA[Jira]
-    CONF[Confluence]
-    SUPPORT[Delta Support]
-  end
-
-  M1 --> SLURM
-  M2 --> ICHAT
-  M4 --> JIRA
-  M4 --> CONF
-  M3 --> SUPPORT
-
-  classDef dim fill:#0b1720,stroke:#2a2f3a,color:#cde7db;
-  classDef focus fill:#112233,stroke:#00ff95,color:#eafff7;
-  class OC,P1,P2 focus;
-  class M1,M2,M3,M4,SLURM,ICHAT,JIRA,CONF,SUPPORT dim;
+  M1 --> SLURM[Slurm CLI]
+  M2 --> ICHAT[Illinois Chat API]
+  M4 --> JIRA[Jira]
+  M4 --> CONF[Confluence]
+  M3 --> SUPPORT[Delta Support]
 ```
 
 ### How things fit together
