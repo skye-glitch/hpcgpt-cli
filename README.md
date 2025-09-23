@@ -1,6 +1,6 @@
 # HPCGPT CLI
 
-HPCCode is a customized CLI tool, based on the Opencode[https://opencode.ai] CLI providing custom integrations to slurm based HPC enviroments. 
+HPCCode is a customized CLI tool, based on the [Opencode](https://opencode.ai) CLI providing custom integrations to slurm based HPC enviroments. 
 
 ## Available Servers
 
