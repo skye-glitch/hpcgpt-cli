@@ -1,19 +1,6 @@
-<div align="center">
-  <svg width="640" height="140" viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="hpcGPT">
-    <defs>
-      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#00ff95" />
-        <stop offset="100%" stop-color="#1b5e20" />
-      </linearGradient>
-      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#003b2b" flood-opacity="0.6"/>
-      </filter>
-    </defs>
-    <rect x="0" y="0" width="640" height="140" rx="14" fill="#0b1720"/>
-    <text x="50%" y="55%" text-anchor="middle" font-size="64" font-family="monospace" fill="url(#g)" filter="url(#shadow)">hpcGPT</text>
-    <text x="50%" y="85%" text-anchor="middle" font-size="14" font-family="monospace" fill="#a0f0cf">Minecraft-style retro banner</text>
-  </svg>
-</div>
+<p align="center">
+  <img src="favicon.png" alt="hpcGPT" width="640" />
+</p>
 
 # HPCGPT CLI
 
@@ -33,21 +20,21 @@ Set environment variables as needed (see Env section below), then pick a model a
 
 ```mermaid
 flowchart LR
-  U[User] -->|TUI| OC[Opencode Agent<br/>(opencode.jsonc)]
+  U[User] -->|TUI| OC[Opencode Agent / opencode.jsonc]
 
   subgraph Providers
-    P1[NCSA Hosted<br/>baseURL: env NCSA_LLM_URL]
-    P2[NCSA Ollama<br/>baseURL: env NCSA_OLLAMA_URL]
+    P1[NCSA Hosted baseURL: env NCSA_LLM_URL]
+    P2[NCSA Ollama baseURL: env NCSA_OLLAMA_URL]
   end
 
   OC --> P1
   OC --> P2
 
-  subgraph MCP Servers (local unless noted)
-    S1[slurm-mcp-server<br/>Tools: accounts, sinfo, squeue, scontrol]
-    S2[illinois-chat-server<br/>Tools: delta-docs, delta-ai-docs]
-    S3[report-server<br/>Tool: send_support_report]
-    S4[atlassian-mcp-server (container)<br/>Jira/Confluence tools]
+  subgraph MCP Servers local unless noted
+    S1[slurm-mcp-server Tools: accounts, sinfo, squeue, scontrol]
+    S2[illinois-chat-server Tools: delta-docs, delta-ai-docs]
+    S3[report-server Tool: send_support_report]
+    S4[atlassian-mcp-server (container) Jira/Confluence tools]
   end
 
   OC -. tools .-> S1
@@ -56,8 +43,8 @@ flowchart LR
   OC -. tools .-> S4
 
   S1 -->|exec| SLURM[(Slurm CLI on host)]
-  S2 -->|HTTPS| ICHAT[https://uiuc.chat/api/chat-api/chat]
-  S4 -->|HTTPS| ATL[Jira/Confluence]
+  S2 -->|HTTPS| ICHAT[uiuc.chat api]
+  S4 -->|HTTPS| ATL[Jira and Confluence]
   S3 -->|SMTP/API| SUPPORT[Delta Support]
 
   classDef dim fill:#0b1720,stroke:#2a2f3a,color:#cde7db;
