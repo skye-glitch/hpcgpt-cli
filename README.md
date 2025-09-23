@@ -2,20 +2,16 @@
   <svg width="640" height="140" viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="hpcGPT">
     <defs>
       <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#00ff95">
-          <animate attributeName="offset" values="0;1;0" dur="5s" repeatCount="indefinite" />
-        </stop>
-        <stop offset="100%" stop-color="#1b5e20">
-          <animate attributeName="offset" values="1;0;1" dur="5s" repeatCount="indefinite" />
-        </stop>
+        <stop offset="0%" stop-color="#00ff95" />
+        <stop offset="100%" stop-color="#1b5e20" />
       </linearGradient>
       <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
         <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#003b2b" flood-opacity="0.6"/>
       </filter>
     </defs>
     <rect x="0" y="0" width="640" height="140" rx="14" fill="#0b1720"/>
-    <text x="50%" y="55%" text-anchor="middle" font-size="64" font-family="'Press Start 2P', monospace" fill="url(#g)" filter="url(#shadow)">hpcGPT</text>
-    <text x="50%" y="85%" text-anchor="middle" font-size="14" font-family="monospace" fill="#a0f0cf">Minecraft-style retro banner • animated gradient</text>
+    <text x="50%" y="55%" text-anchor="middle" font-size="64" font-family="monospace" fill="url(#g)" filter="url(#shadow)">hpcGPT</text>
+    <text x="50%" y="85%" text-anchor="middle" font-size="14" font-family="monospace" fill="#a0f0cf">Minecraft-style retro banner</text>
   </svg>
 </div>
 
@@ -37,21 +33,21 @@ Set environment variables as needed (see Env section below), then pick a model a
 
 ```mermaid
 flowchart LR
-  U[User] -->|TUI| OC[Opencode Agent]\n(opencode.jsonc)
+  U[User] -->|TUI| OC[Opencode Agent<br/>(opencode.jsonc)]
 
   subgraph Providers
-    P1[NCSA Hosted\nbaseURL: env NCSA_LLM_URL]
-    P2[NCSA Ollama\nbaseURL: env NCSA_OLLAMA_URL]
+    P1[NCSA Hosted<br/>baseURL: env NCSA_LLM_URL]
+    P2[NCSA Ollama<br/>baseURL: env NCSA_OLLAMA_URL]
   end
 
   OC --> P1
   OC --> P2
 
   subgraph MCP Servers (local unless noted)
-    S1[slurm-mcp-server\nTools: accounts, sinfo, squeue, scontrol]
-    S2[illinois-chat-server\nTools: delta-docs, delta-ai-docs]
-    S3[report-server\nTool: send_support_report]
-    S4[atlassian-mcp-server (container)\nJira/Confluence tools]
+    S1[slurm-mcp-server<br/>Tools: accounts, sinfo, squeue, scontrol]
+    S2[illinois-chat-server<br/>Tools: delta-docs, delta-ai-docs]
+    S3[report-server<br/>Tool: send_support_report]
+    S4[atlassian-mcp-server (container)<br/>Jira/Confluence tools]
   end
 
   OC -. tools .-> S1
@@ -60,7 +56,7 @@ flowchart LR
   OC -. tools .-> S4
 
   S1 -->|exec| SLURM[(Slurm CLI on host)]
-  S2 -->|HTTPS| ICHAT[`https://uiuc.chat/api/chat-api/chat`]
+  S2 -->|HTTPS| ICHAT[https://uiuc.chat/api/chat-api/chat]
   S4 -->|HTTPS| ATL[Jira/Confluence]
   S3 -->|SMTP/API| SUPPORT[Delta Support]
 
@@ -102,17 +98,9 @@ flowchart LR
 Install Opencode and point it at this repo’s config:
 
 ```bash
-<<<<<<< HEAD
 curl -fsSL https://opencode.ai/install | bash
 export OPENCODE_CONFIG=/absolute/path/to/this/repo/opencode.jsonc
 opencode
-=======
-export EMAIL_TARGET="your_email"
-export SYSTEM_NAME="Delta"
-export UIUC_API_KEY="your_uiuc_api_key"
-export UIUC_COURSE_NAME="Delta-Documentation"
-npm run start
->>>>>>> c142d57 (Updated readme)
 ```
 
 ### Optional: Local MCP server setup
