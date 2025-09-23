@@ -31,7 +31,7 @@ Set environment variables as needed (see Env section below), then pick a model a
 ## System Architecture
 
 ```mermaid
-flowchart LR
+graph TD
   U[User] -->|TUI| OC[Opencode Agent and opencode.jsonc]
 
   subgraph Providers
