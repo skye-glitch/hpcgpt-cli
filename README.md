@@ -32,37 +32,49 @@ Set environment variables as needed (see Env section below), then pick a model a
 
 ```mermaid
 graph TD
-  U[User] -->|TUI| OC[Opencode Agent and opencode.jsonc]
+  U[User]
+  OC[Opencode Agent]
+
+  U -->|TUI| OC
 
   subgraph Providers
-    P1[NCSA Hosted baseURL: env NCSA_LLM_URL]
-    P2[NCSA Ollama baseURL: env NCSA_OLLAMA_URL]
+    P1[NCSA Hosted]
+    P2[NCSA Ollama]
   end
 
   OC --> P1
   OC --> P2
 
-  subgraph MCP Servers local unless noted
-    S1[slurm-mcp-server Tools: accounts, sinfo, squeue, scontrol]
-    S2[illinois-chat-server Tools: delta-docs, delta-ai-docs]
-    S3[report-server Tool: send_support_report]
-    S4[atlassian-mcp-server container Jira and Confluence tools]
+  subgraph MCP Servers (local unless noted)
+    M1[slurm-mcp-server]
+    M2[illinois-chat-server]
+    M3[report-server]
+    M4[atlassian-mcp-server container]
   end
 
-  OC -. tools .-> S1
-  OC -. tools .-> S2
-  OC -. tools .-> S3
-  OC -. tools .-> S4
+  OC -. tools .-> M1
+  OC -. tools .-> M2
+  OC -. tools .-> M3
+  OC -. tools .-> M4
 
-  S1 -->|exec| SLURM[(Slurm CLI on host)]
-  S2 -->|HTTPS| ICHAT[uiuc.chat api]
-  S4 -->|HTTPS| ATL[Jira and Confluence]
-  S3 -->|SMTP/API| SUPPORT[Delta Support]
+  subgraph External Services
+    SLURM[Slurm CLI]
+    ICHAT[Illinois Chat API]
+    JIRA[Jira]
+    CONF[Confluence]
+    SUPPORT[Delta Support]
+  end
+
+  M1 --> SLURM
+  M2 --> ICHAT
+  M4 --> JIRA
+  M4 --> CONF
+  M3 --> SUPPORT
 
   classDef dim fill:#0b1720,stroke:#2a2f3a,color:#cde7db;
   classDef focus fill:#112233,stroke:#00ff95,color:#eafff7;
   class OC,P1,P2 focus;
-  class S1,S2,S3,S4 dim;
+  class M1,M2,M3,M4,SLURM,ICHAT,JIRA,CONF,SUPPORT dim;
 ```
 
 ### How things fit together
