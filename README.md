@@ -32,7 +32,7 @@ Set environment variables as needed (see Env section below), then pick a model a
 
 ```mermaid
 flowchart LR
-  U[User] -->|TUI| OC[Opencode Agent / opencode.jsonc]
+  U[User] -->|TUI| OC[Opencode Agent and opencode.jsonc]
 
   subgraph Providers
     P1[NCSA Hosted baseURL: env NCSA_LLM_URL]
@@ -46,7 +46,7 @@ flowchart LR
     S1[slurm-mcp-server Tools: accounts, sinfo, squeue, scontrol]
     S2[illinois-chat-server Tools: delta-docs, delta-ai-docs]
     S3[report-server Tool: send_support_report]
-    S4[atlassian-mcp-server (container) Jira/Confluence tools]
+    S4[atlassian-mcp-server container Jira and Confluence tools]
   end
 
   OC -. tools .-> S1
