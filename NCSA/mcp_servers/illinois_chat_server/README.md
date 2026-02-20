@@ -47,7 +47,7 @@ Query the Delta AI documentation for AI/ML specific information.
 
 1. **Install dependencies:**
    ```bash
-   cd mcp_servers/illinois_chat_server
+   cd NCSA/mcp_servers/illinois_chat_server
    bun install
    # or
    npm install
@@ -70,7 +70,7 @@ Query the Delta AI documentation for AI/ML specific information.
 
 ### OpenCode Integration
 
-Add this to your `opencode.jsonc` file:
+Add this to your `NCSA/opencode.jsonc` file:
 
 ```json
 {
@@ -228,6 +228,4 @@ For support and questions:
 ---
 
 **Note**: This MCP server is designed specifically for use with the Delta HPC system at NCSA/University of Illinois. Ensure you have proper access credentials before attempting to use this server.
-
-
 
