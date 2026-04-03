@@ -5,6 +5,8 @@
 # Environment files
 .env
 .env.*
+config.json
+
 # Allow an example .env file
 !.env.example
 
@@ -15,6 +17,15 @@ node_modules
 [Bb]uild/
 [Ll]ogs/
 [Cc]overage/
+[Dd]ata/
+[Mm]odels/
+[Tt]mp/
+__pycache__/
+
+# LLMFlux build directories
+.cache/
+.vllm/
+
 
 # npm and yarn debug logs
 npm-debug.log*
