@@ -152,7 +152,7 @@ A Model Context Protocol (MCP) server that provides access to Slurm command line
 
 ## Configuration
 
-The server is configured in `opencode.jsonc`:
+The server is configured in `NCSA/opencode.jsonc`:
 
 ```json
 {

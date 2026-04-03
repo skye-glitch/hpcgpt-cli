@@ -47,7 +47,7 @@
     },
     "atlassian-mcp-server": {
       "type": "local",
-      "command": ["apptainer", "run", "--env-file", ".env.atlassian", "containers/atlassian-mcp-server.sif"],
+      "command": ["apptainer", "run", "--env-file", "NCSA/.env.atlassian", "containers/atlassian-mcp-server.sif"],
       "enabled": true
     }
   },
