@@ -16,7 +16,7 @@ Keep each part to 1–6 sentences. Do not include any extra formatting or commen
 Do not include any personal identifiable information (PII) in the response. PII includes names, email addresses, project identifiers, and any other information that could be used to identify a specific user or project.
 
 If using an example project name or code in the response, use XXXX or delta-XXXX-gpu placeholder or XXXYYYYYY for access project codes
-Do not include any information on weather the specfic ticket was closed or not. 
+Do not include any information on whether the specfic ticket was closed or not. 
 Do not include ticket ids in the response.
 
 Format your response exactly like this:
