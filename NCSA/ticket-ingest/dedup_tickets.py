@@ -84,7 +84,6 @@ def extract_qa_pairs(input_path: str) -> list[dict]:
     for item in results:
         try:
             content = item["output"]["choices"][0]["message"]["content"]
-            # Strip <think>...</think> block if present
             content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
             pairs.append({
                 "custom_id": item["input"]["custom_id"],
@@ -117,7 +116,6 @@ def dedup_by_topic(pairs: list[dict], topic_results_path: str) -> list[dict]:
     with open(topic_results_path) as f:
         topic_results = json.load(f)
 
-    # Build custom_id -> topic key map
     topic_map = {}
     for item in topic_results:
         try:
@@ -127,7 +125,6 @@ def dedup_by_topic(pairs: list[dict], topic_results_path: str) -> list[dict]:
         except (KeyError, IndexError):
             continue
 
-    # Keep first Q/A seen per topic
     seen_topics = {}
     for pair in pairs:
         topic = topic_map.get(pair["custom_id"], pair["custom_id"])
@@ -160,8 +157,6 @@ def main():
     print("Writing topic-labeling prompts...")
     write_topic_prompts(pairs, prompts_path)
     print(f"Wrote {len(pairs)} prompts to {prompts_path}")
-
-    # If topic results already exist (rerun), skip Slurm submission
     if Path(topic_results_path).exists():
         print(f"Topic results already found at {topic_results_path}, skipping Slurm job.")
     else:
