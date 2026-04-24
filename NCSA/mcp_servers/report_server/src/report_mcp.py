@@ -33,7 +33,6 @@ class SupportReportToolParameters(BaseModel):
         description="The current working directory of the user who is reporting the issue, should be the output of `pwd` command.")
 
 
-
 class ReportMCP(FastMCP):
     """
     HPC-GPT Support Reporting MCP Server.
@@ -92,7 +91,7 @@ class ReportMCP(FastMCP):
             log.error(f"Error identifying user in Jira: {e}")
             reporter = parameters.user
         
-        description = parameters.description + "\nConversation History:\n" + "\n".join([f"{message['role']}: {message['content']}" for message in parameters.conversation_history])
+        description = parameters.description + "\nConversation History:\n" + "\n".join([f"{message.role}: {message.content}" for message in parameters.conversation_history])
         
         # Submit issue
         issue = self.jira.create_issue(
