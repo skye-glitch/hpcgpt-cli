@@ -12,19 +12,26 @@ from src.jira_connector import JiraConnectionManager
 
 log = logging.getLogger("REPORT_MCP_SERVER")
 
+class ConversationHistoryMessage(BaseModel):
+    role: str = Field(
+        description="The role of the message, should be either 'user' or 'assistant' or 'system'.")
+    content: str = Field(
+        description="The content of the message.")
+
 class SupportReportToolParameters(BaseModel):
     title: str = Field(
         description="The title of the report ticket to send.")
     description: str = Field(
         description="A short one paragraph description of the issue that is being reported.")
-    conversation_history: list[dict[str, Any]] = Field(
+    conversation_history: list[ConversationHistoryMessage] = Field(
         description="The history of the conversation that led to this ticket report.")
     hostname: str = Field(
-        description="The hostname of the system that is reporting the issue")
+        description="The hostname of the system that is reporting the issue, should be the output of `hostname` command.")
     user: str = Field(
-        description="The user who is reporting the issue")
+        description="The user who is reporting the issue, should be the output of `whoami` command.")
     current_working_directory: str = Field(
-        description="The current working directory of the user who is reporting the issue")
+        description="The current working directory of the user who is reporting the issue, should be the output of `pwd` command.")
+
 
 
 class ReportMCP(FastMCP):

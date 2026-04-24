@@ -41,12 +41,12 @@
     },
     "report-server": {
       "type": "remote",
-      "url": "http://localhost:8003/mcp", 
+      "url": "http://dt-hpcgpt:8003/mcp", 
       "enabled": true
     },
     "knowledge-base-server": {
       "type": "remote",
-      "url": "http://localhost:8004/mcp",
+      "url": "http://dt-hpcgpt:8004/mcp",
       "enabled": false
     }
   },
