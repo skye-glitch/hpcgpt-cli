@@ -32,7 +32,6 @@ class SupportReportToolParameters(BaseModel):
     current_working_directory: str = Field(
         description="The current working directory of the user who is reporting the issue, should be the output of `pwd` command.")
 
-
 class ReportMCP(FastMCP):
     """
     HPC-GPT Support Reporting MCP Server.
@@ -91,7 +90,9 @@ class ReportMCP(FastMCP):
             log.error(f"Error identifying user in Jira: {e}")
             reporter = parameters.user
         
-        description = parameters.description + "\nConversation History:\n" + "\n".join([f"{message.role}: {message.content}" for message in parameters.conversation_history])
+        description = parameters.description + "\n\n### Conversation History ###"
+        for message in parameters.conversation_history:
+            description += f"\n*{message.role}*: {message.content}"
         
         # Submit issue
         issue = self.jira.create_issue(
@@ -113,12 +114,6 @@ class ReportMCP(FastMCP):
         issue_url = f"{self.jira.server_url}/browse/{issue.key}"
         log.info(f"Issue {issue.key} created: {issue_url}")
         return f"Issue {issue.key} created: {issue_url}"
-
-    def _send_email_support_report(self, parameters: SupportReportToolParameters, user_info: dict[str, Any]) -> str:
-        """
-        Send a support report to email.
-        """
-        raise ValueError(f"Email not implemented yet")
 
     def _get_local_user_info(self, username: str) -> dict[str, Any] | None:
         """
@@ -170,3 +165,81 @@ class ReportMCP(FastMCP):
 
         log.debug(f"Userinfo for user \"{username}\": {user_dict}")
         return user_dict
+
+    def _send_email_support_report(self, parameters: SupportReportToolParameters, user_info: dict[str, Any] | None) -> str:
+        """
+        Send a support report to email.
+        """
+        if self.config.email is None:
+            raise ValueError("Email configuration is required when mode is 'email'")
+
+        description = parameters.description + "\n\n### Conversation History ###"
+        for message in parameters.conversation_history:
+            description += f"\n*{message.role}*: {message.content}"
+
+        report_lines = [
+            f"Title: {parameters.title}",
+            "",
+            "Description:",
+            description,
+            "",
+            "Environment:",
+            f"  User: {user_info.get('username') if user_info else parameters.user}",
+            f"  Hostname: {parameters.hostname}",
+            f"  Current Working Directory: {parameters.current_working_directory}",
+        ]
+        if user_info and user_info.get("groups"):
+            report_lines.append(f"  Groups: {' '.join(user_info['groups'])}")
+
+        report_lines.extend(["", "Conversation History:"])
+        for message in parameters.conversation_history:
+            report_lines.append(f"  {message.role}: {message.content}")
+
+        body = "\n".join(report_lines)
+        self._send_email(
+            recipient_address=self.config.email.recipient_address,
+            subject=self.config.email.subject,
+            body=body,
+            sender_address=self.config.email.sender_address,
+        )
+        log.info(
+            "Support email sent to %s",
+            self.config.email.recipient_address,
+        )
+        return f"Support email sent to {self.config.email.recipient_address}"
+
+    def _send_email(self, recipient_address: str, subject: str, body: str, sender_address: str = None) -> str:
+        """
+        Send an email using the system `mail` command.
+        """
+        command = ["mail", "-s", subject]
+        if sender_address:
+            command.extend(["-r", sender_address])
+        command.append(recipient_address)
+
+        try:
+            result = subprocess.run(
+                command,
+                input=body,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        except FileNotFoundError as exc:
+            raise RuntimeError(
+                "The `mail` command was not found. Install mailx/mailutils on this system."
+            ) from exc
+        except Exception as exc:
+            raise RuntimeError(f"Failed to invoke mail command: {exc}") from exc
+
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"mail command failed with exit code {result.returncode}: {result.stderr.strip()}"
+            )
+
+        log.debug(
+            "mail command succeeded for recipient=%s sender=%s",
+            recipient_address,
+            sender_address,
+        )
+        return "Email sent successfully"
