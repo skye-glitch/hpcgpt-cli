@@ -1,6 +1,7 @@
 import logging
 import argparse
-import subprocess   
+import shlex
+import subprocess
 from rich_argparse import RichHelpFormatter
 from fastmcp import FastMCP
 
@@ -18,6 +19,29 @@ class SlurmMCP(FastMCP):
         self.add_tool(self.sinfo)
         self.add_tool(self.squeue)
         self.add_tool(self.scontrol)
+
+    def _run_command(self, base_command: str, arg_string: str = "") -> str:
+        """
+        Run a command with optional shell-style args and return output.
+        """
+        command = [base_command]
+        if arg_string and arg_string.strip():
+            command.extend(shlex.split(arg_string))
+
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, check=False)
+        except FileNotFoundError:
+            return f"Error: command not found: {base_command}"
+        except Exception as exc:
+            return f"Error running {' '.join(command)}: {exc}"
+
+        if result.returncode != 0:
+            stderr = (result.stderr or "").strip()
+            stdout = (result.stdout or "").strip()
+            details = stderr or stdout or "No error output"
+            return f"Error ({result.returncode}) running {' '.join(command)}: {details}"
+
+        return result.stdout
 
     async def accounts(self, username: str) -> str:
         """
@@ -42,8 +66,7 @@ class SlurmMCP(FastMCP):
         Returns:
             The output of the sinfo command.
         """
-        result = subprocess.run(["sinfo", sinfo_args], capture_output=True, text=True)
-        return result.stdout
+        return self._run_command("sinfo", sinfo_args)
 
     async def squeue(self, squeue_args: str = "") -> str:
         """
@@ -55,8 +78,7 @@ class SlurmMCP(FastMCP):
         Returns:
             The output of the squeue command.
         """
-        result = subprocess.run(["squeue", squeue_args], capture_output=True, text=True)
-        return result.stdout
+        return self._run_command("squeue", squeue_args)
 
     async def scontrol(self, job_id: str, scontrol_args: str = "") -> str:
         """
@@ -69,8 +91,10 @@ class SlurmMCP(FastMCP):
         Returns:
             The output of the scontrol command.
         """
-        result = subprocess.run(["scontrol", scontrol_args], capture_output=True, text=True)
-        return result.stdout
+        command_args = scontrol_args.strip()
+        if job_id and job_id.strip():
+            command_args = f"show job {job_id}" + (f" {command_args}" if command_args else "")
+        return self._run_command("scontrol", command_args)
 
 def parse_command_line() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
