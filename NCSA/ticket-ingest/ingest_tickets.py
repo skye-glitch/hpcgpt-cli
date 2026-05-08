@@ -1,28 +1,4 @@
 #!/usr/bin/env python3
-"""
-ingest_tickets.py - Unified ticket ingestion pipeline
-
-Takes a CSV of new tickets and an existing Q/A pairs JSON, then:
-  1. Prepares prompts from new tickets
-  2. Summarizes new tickets into Q/A pairs via llmflux (Slurm)
-  3. Deduplicates the new Q/A pairs
-  4. Merges with existing Q/A pairs
-  5. Re-clusters all pairs (reusing existing cluster definitions if available)
-  6. Saves the updated Q/A pairs
-
-Usage:
-    python3 ingest_tickets.py \
-        --new-csv dtsup_january26.csv \
-        --existing-pairs /path/to/clustered.json \
-        --output /path/to/updated_clustered.json \
-        [--cluster-defs /path/to/cluster_definitions.json] \
-        [--work-dir data/runs/jan26]
-
-Environment variables required:
-    NCSA_LLM_URL            - Illinois Chat API base URL
-    ILLINOIS_CHAT_API_KEY   - Illinois Chat API key
-"""
-
 import argparse
 import json
 import os
