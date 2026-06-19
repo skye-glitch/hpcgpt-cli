@@ -1,22 +1,54 @@
-# Client deployment (site install)
+# Client deployment instructions (site install)
 
-Deploy the hpcGPT OpenCode CLI on an HPC cluster so users load it via Environment Modules instead of installing into their home directory.
+These are the instructions for deploy the hpcGPT OpenCode CLI on an HPC cluster so users load it via Environment Modules instead of installing into their home directory. The files in this directory are from Delta's deployment and will need tweaks for other systems.
 
-This directory contains:
+
+## Directory contents
+
+```text
+client-deployment/
+  installer.sh       # Site OpenCode installer
+  module.lua         # Lmod/Environment Modules template
+  opencode.jsonc     # Site config template (providers, MCP, prompts)
+  prompts/
+    support.txt      # Support agent system prompt
+    report.txt       # `/report` command template
+```
 
 | File | Purpose |
 |------|---------|
-| `installer.sh` | Site OpenCode installer (fork of the [official installer](https://opencode.ai/install)) with `--install-dir` and `--no-modify-path` |
-| `module.lua` | Lmod/Environment Modules template that sets `PATH`, `OPENCODE_CONFIG`, and `NCSA_LLM_URL` |
-| `opencode.jsonc` | Site-Config file for opencode.
+| `installer.sh` | Fork of the [official OpenCode installer](https://opencode.ai/install) with `--install-dir` and `--no-modify-path` |
+| `module.lua` | Lmod template that sets `PATH`, `OPENCODE_CONFIG`, and `NCSA_LLM_URL` |
+| `opencode.jsonc` | Site config: provider, models, MCP server URLs, permissions, and prompt references |
+| `prompts/` | Prompt files referenced by `opencode.jsonc` via `{file:./prompts/...}` |
 
-### Install the OpenCode binary
+## Target site layout
 
-Delta uses the `/sw/external/` path for system software so in our example code that is where we are installing. 
+Delta uses `/sw/external/` for system software. After deployment, the install root should look like:
 
-Run the installer as a user with permission to write the target directory. Use `--no-modify-path` so user shell configs are not modified on the admin account.
+```text
+/sw/external/opencode/
+  bin/opencode
+  opencode.json
+  prompts/
+    support.txt
+    report.txt
+
+/sw/external/modulefiles/hpc-gpt/
+  1.15.13.lua
+```
+
+The module name (`hpc-gpt`) comes from the modulefile directory name. Adjust paths if your site uses a different convention.
+
+## Site admin setup
+
+### 1. Install the OpenCode binary
+
+Run the installer as a user with permission to write the target directory. Use `--no-modify-path` so shell configs on the admin account are not modified.
 
 ```bash
+cd client-deployment
+
 bash installer.sh \
   --install-dir /sw/external/opencode/bin \
   --no-modify-path
@@ -28,61 +60,81 @@ Verify:
 /sw/external/opencode/bin/opencode --version
 ```
 
-### Deploy site configuration
+### 2. Deploy site configuration and prompts
 
-Copy and customize the OpenCode config:
+Copy the config and prompt files into the install root. Prompt paths in the config are relative to the config file, so keep `prompts/` alongside it.
 
 ```bash
-cp ../opencode.jsonc /sw/external/opencode/delta-opencode.json
+mkdir -p /sw/external/opencode/prompts
+
+cp opencode.jsonc /sw/external/opencode/opencode.json
+cp prompts/support.txt prompts/report.txt /sw/external/opencode/prompts/
 ```
 
-Edit that file for your center: provider models, MCP server URLs, prompts, and permissions.
+Edit `/sw/external/opencode/opencode.json` for your site:
 
-### Install the modulefile
+- **Provider / models** — model IDs and display names under `provider`
+- **`NCSA_LLM_URL`** — set in the modulefile (see below); referenced in config as `{env:NCSA_LLM_URL}`
+- **MCP servers** — Enable/Disable the MCP servers that you have deployed. Slurm, Illinois Chat, report, and knowledge-base endpoints
 
-Copy `module.lua` into your modules tree, for example:
+### 3. Install the modulefile
+
+Copy `module.lua` into your modules tree. The filename should match the OpenCode version you installed.
 
 ```bash
-mkdir -p /sw/external/modulefiles/opencode
-cp module.lua /sw/external/modulefiles/opencode/1.15.13.lua
+mkdir -p /sw/external/modulefiles/hpc-gpt
+cp module.lua /sw/external/modulefiles/hpc-gpt/1.15.13.lua
 ```
 
 Update the template for your site:
 
-- `root` — software root (e.g. `/sw/external/opencode`)
-- `version` — module version string; should match the OpenCode release you installed
-- `OPENCODE_CONFIG` — path to your site config JSON/JSONC file
-- `NCSA_LLM_URL` — your hosted model endpoint 
-
-Reload the module index if your site requires it (`module use`, `module spider`, etc.).
+| Variable | Description |
+|----------|-------------|
+| `root` | Software root (e.g. `/sw/external/opencode`) |
+| `version` | Module version string; should match the installed OpenCode release |
+| `OPENCODE_CONFIG` | Path to your site config (e.g. `/sw/external/opencode/delta-opencode.json`) |
+| `NCSA_LLM_URL` | Base URL for your hosted OpenAI-compatible model endpoint |
 
 ## End user usage
 
 After the site admin completes the steps above:
 
 ```bash
-module load opencode/1.15.13
+module load hpc-gpt/1.15.13
 opencode
 ```
 
-## Installer options
-
-| Option | Description |
-|--------|-------------|
-| `-h`, `--help` | Show usage |
-| `-v`, `--version <ver>` | Install a specific release (e.g. `1.15.13` or `v1.15.13`) |
-| `-d`, `--install-dir <path>` | Directory for the `opencode` binary (default: `~/.opencode/bin`) |
-| `-b`, `--binary <path>` | Install from a local binary; skip download |
-| `--no-modify-path` | Do not append install dir to shell rc files |
-
-Environment variable `OPENCODE_INSTALL_DIR` is equivalent to `--install-dir` (the flag wins if both are set).
+Loading the module sets `OPENCODE_CONFIG` and `NCSA_LLM_URL` automatically. Users do not need a personal install or config export.
 
 ## Upgrading
 
 1. Run `installer.sh` with the new `--version` (or latest if omitted).
 2. Update the modulefile version string and filename if you version modules per release.
-3. Re-test `opencode` and your `OPENCODE_CONFIG` against the new CLI.
+3. Re-test `opencode` and your site config against the new CLI.
+4. Review the [OpenCode release notes](https://github.com/anomalyco/opencode/releases) for breaking config changes.
 
-## Per-user install
+## Per-user install (development)
 
-For development users can install the opencode client themselves in there home directory by following the standard [opencode install instructions](http://opencode.ai) and pointing to there own config with `export OPENCODE_CONFIG=path/to/config`
+
+> **Warning**  
+> Having a locally installed OpenCode version in your home directory can cause conflicts with the site-wide installation. That produce errors like this when you try to use opencode:
+```
+Error: 4 of 5 requests failed: Unexpected server error. Check server logs for details.
+Affected startup requests: config.providers, provider.list, app.agents, config.get
+    at r0 (/$bunfs/root/chunk-a3x1tf54.js:468:117)
+    at <anonymous> (/$bunfs/root/chunk-a3x1tf54.js:468:5550)
+    at processTicksAndRejections (native:7:39)
+```
+> To use the site-wide install, you will need to delete any existing OpenCode files in your home directory, specifically at `~/.config/opencode` and `~/.opencode`.
+
+For development, users can install the OpenCode client in their home directory by following the standard [OpenCode install instructions](https://opencode.ai) and pointing to their own config:
+
+```bash
+export OPENCODE_CONFIG=/path/to/opencode.jsonc
+export NCSA_LLM_URL=https://your-endpoint/v1
+opencode
+```
+
+When using a repo checkout, set `OPENCODE_CONFIG` to the absolute path of `NCSA/opencode.jsonc` or this directory's `opencode.jsonc`.
+
+
