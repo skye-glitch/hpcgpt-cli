@@ -41,7 +41,7 @@ hpcgpt-cli/
   NCSA/
     README.md
     client-deployment/     # Site install: installer, modulefile, config, prompts
-    mcp_servers/           # Slurm, Illinois Chat, report MCP servers
+    mcp_servers/           # Slurm, Illinois Chat, report, ticket knowledge-base MCP servers
     ticket-ingest/         # Support ticket → Q&A dataset pipeline
     doc-scraping/
     example.env

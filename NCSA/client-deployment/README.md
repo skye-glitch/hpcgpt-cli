@@ -1,7 +1,6 @@
 # Client deployment instructions (site install)
 
-These are the instructions for deploy the hpcGPT OpenCode CLI on an HPC cluster so users load it via Environment Modules instead of installing into their home directory. The files in this directory are from Delta's deployment and will need tweaks for other systems.
-
+These are the instructions for deploying the hpcGPT OpenCode CLI on an HPC cluster so users load it via Environment Modules. The files in this directory are from Delta's deployment and will need tweaks for other systems.
 
 ## Directory contents
 
@@ -75,7 +74,7 @@ Edit `/sw/external/opencode/opencode.json` for your site:
 
 - **Provider / models** — model IDs and display names under `provider`
 - **`NCSA_LLM_URL`** — set in the modulefile (see below); referenced in config as `{env:NCSA_LLM_URL}`
-- **MCP servers** — Enable/Disable the MCP servers that you have deployed. Slurm, Illinois Chat, report, and knowledge-base endpoints
+- **MCP servers** — Enable/Disable the MCP servers that you have deployed. Slurm, Illinois Chat, report, and/or knowledge-base endpoints
 
 ### 3. Install the modulefile
 
@@ -115,17 +114,18 @@ Loading the module sets `OPENCODE_CONFIG` and `NCSA_LLM_URL` automatically. User
 
 ## Per-user install (development)
 
-
-> **Warning**  
-> Having a locally installed OpenCode version in your home directory can cause conflicts with the site-wide installation. That produce errors like this when you try to use opencode:
-```
-Error: 4 of 5 requests failed: Unexpected server error. Check server logs for details.
-Affected startup requests: config.providers, provider.list, app.agents, config.get
-    at r0 (/$bunfs/root/chunk-a3x1tf54.js:468:117)
-    at <anonymous> (/$bunfs/root/chunk-a3x1tf54.js:468:5550)
-    at processTicksAndRejections (native:7:39)
-```
-> To use the site-wide install, you will need to delete any existing OpenCode files in your home directory, specifically at `~/.config/opencode` and `~/.opencode`.
+> **Warning**
+> A locally installed OpenCode version in your home directory can conflict with the site-wide installation and produce errors like this when you try to use `opencode`:
+>
+> ```
+> Error: 4 of 5 requests failed: Unexpected server error. Check server logs for details.
+> Affected startup requests: config.providers, provider.list, app.agents, config.get
+>     at r0 (/$bunfs/root/chunk-a3x1tf54.js:468:117)
+>     at <anonymous> (/$bunfs/root/chunk-a3x1tf54.js:468:5550)
+>     at processTicksAndRejections (native:7:39)
+> ```
+>
+> To use the site-wide install, delete any existing OpenCode files in your home directory, specifically at `~/.config/opencode` and `~/.opencode`.
 
 For development, users can install the OpenCode client in their home directory by following the standard [OpenCode install instructions](https://opencode.ai) and pointing to their own config:
 
@@ -135,6 +135,4 @@ export NCSA_LLM_URL=https://your-endpoint/v1
 opencode
 ```
 
-When using a repo checkout, set `OPENCODE_CONFIG` to the absolute path of `NCSA/opencode.jsonc` or this directory's `opencode.jsonc`.
-
-
+When using a repo checkout, set `OPENCODE_CONFIG` to the absolute path of this directory's `opencode.jsonc`.
