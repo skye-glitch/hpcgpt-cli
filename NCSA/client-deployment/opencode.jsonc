@@ -1,5 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "enabled_providers": ["ncsahosted"],
+  "agent": {
+    "build": { "disable": true },
+    "plan": { "disable": true },
+  },
   "mode": {
     "support": {
       "model": "ncsahosted/Qwen/Qwen3-VL-32B-Instruct",
@@ -47,7 +52,7 @@
     "knowledge-base-server": {
       "type": "remote",
       "url": "http://dt-hpcgpt:8004/mcp",
-      "enabled": false
+      "enabled": true
     }
   },
   "command": {
