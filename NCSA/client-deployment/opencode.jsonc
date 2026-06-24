@@ -52,7 +52,7 @@
     "knowledge-base-server": {
       "type": "remote",
       "url": "http://dt-hpcgpt:8004/mcp",
-      "enabled": false
+      "enabled": true
     }
   },
   "command": {
